@@ -18,6 +18,14 @@ module xor_gate_using_mux
     output o
 );
 
+  wire not_a, not_b, and1, and2;
+
+  assign not_a = ~a;
+  assign not_b = ~b;
+  assign and1 = not_a & b;
+  assign and2 = a & not_b;
+
+  assign o = and1 | and2;
   // TODO
 
   // Implement xor gate using instance(s) of mux,

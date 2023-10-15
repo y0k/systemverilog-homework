@@ -18,6 +18,7 @@ module and_gate_using_mux
     output o
 );
 
+assign o = &a & b;
   // TODO
 
   // Implement and gate using instance(s) of mux,

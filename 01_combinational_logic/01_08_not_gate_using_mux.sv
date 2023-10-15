@@ -16,6 +16,16 @@ module not_gate_using_mux
     input  i,
     output o
 );
+  wire sel;
+  assign sel = i;
+
+  mux mux_inst
+  (
+    .d0(1'b1),
+    .d1(1'b0),
+    .sel(sel),
+    .y(o)
+  );
 
   // TODO
 

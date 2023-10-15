@@ -56,6 +56,15 @@ module mux_4_1
   output [3:0] y
 );
 
+  wire sel0 = ~sel[0] & ~sel[1];
+  wire sel1 = sel[0] & ~sel[1];
+  wire sel2 = ~sel[0] & sel[1];
+  wire sel3 = sel[0] & sel[1];
+
+  assign y[0] = (d0[0] & sel0) | (d1[0] & sel1) | (d2[0] & sel2) | (d3[0] & sel3);
+  assign y[1] = (d0[1] & sel0) | (d1[1] & sel1) | (d2[1] & sel2) | (d3[1] & sel3);
+  assign y[2] = (d0[2] & sel0) | (d1[2] & sel1) | (d2[2] & sel2) | (d3[2] & sel3);
+  assign y[3] = (d0[3] & sel0) | (d1[3] & sel1) | (d2[3] & sel2) | (d3[3] & sel3);
   // TODO
 
   // Using code for mux_2_1_width_1, mux_2_1_width_2,

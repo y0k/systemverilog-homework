@@ -19,6 +19,29 @@ module mux_4_1
   output [3:0] y
 );
 
+  wire [1:0] sel0, sel1;
+  wire [1:0] y0, y1;
+  
+  mux_4_1_width_2 mux0 (
+    .d0({d0[1], d0[0]}),
+    .d1({d1[1], d1[0]}),
+    .d2({d2[1], d2[0]}),
+    .d3({d3[1], d3[0]}),
+    .sel(sel[1:0]),
+    .y(y0)
+  );
+  
+  mux_4_1_width_2 mux1 (
+    .d0({d0[3], d0[2]}),
+    .d1({d1[3], d1[2]}),
+    .d2({d2[3], d2[2]}),
+    .d3({d3[3], d3[2]}),
+    .sel(sel[1:0]),
+    .y(y1)
+  );
+  
+  assign y = {y1, y0};
+
   // TODO
 
   // Implement mux_4_1 with 4-bit data

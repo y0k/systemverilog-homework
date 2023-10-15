@@ -18,6 +18,10 @@ module or_gate_using_mux
     output o
 );
 
+  wire not_a = ~a;
+  wire not_b = ~b;
+
+  assign o = (not_a & not_b) ? 0 : 1;
   // TODO
 
   // Implement or gate using instance(s) of mux,
