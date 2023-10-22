@@ -67,6 +67,33 @@ module serial_comparator_most_significant_first_using_fsm
   // Implement a serial comparator module similar to the previus exercise
   // but use the Finite State Machine to evaluate the result.
   // Most significant bits arrive first.
+typedef enum bit [1:0] {
+  SE = 2'd0,
+  AG = 2'd1,
+  AL = 2'd2
+} SE_type;
+
+SE_type next_st, current_st;
+
+always_comb begin
+  next_st = current_st;
+  if (current_st == SE)
+    if (a & ~b) 
+      next_st = AG;
+     else if (~a & b) 
+      next_st = AL; 
+end
+
+assign      a_eq_b = (a == b) & (current_st == SE);
+assign    a_less_b = (current_st == AL) | (~a & b & (current_st == SE));
+assign a_greater_b = (current_st == AG) | (a & ~b & (current_st == SE));
+
+always_ff @(posedge clk)
+  if (rst) begin
+    current_st = SE;
+  end else 
+    current_st = next_st;
+  
 
 
 endmodule
