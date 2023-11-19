@@ -69,6 +69,45 @@ module detect_6_bit_sequence_using_fsm
   //
   // Hint: See Lecture 3 for details
 
+   enum logic[2:0]
+  {
+    IDLE      = 3'b000,
+    S_1       = 3'b001,
+    S_11      = 3'b010,
+    S_110     = 3'b011,
+    S_1100    = 3'b100,
+    S_11001   = 3'b101,
+    S_110011  = 3'b110
+} 
+state, new_state;
+
+always_comb 
+begin
+    new_state = state;
+
+    case(state)
+        IDLE:     if(  a) new_state = S_1;
+        S_1:      if(  a) new_state = S_11;
+                  else  new_state = IDLE;
+        S_11:     if(~ a) new_state = S_110;
+        S_110:    if(  a) new_state = S_1;
+                  else  new_state = S_1100;
+        S_1100:   if(  a) new_state = S_11001;
+                  else  new_state = IDLE;
+        S_11001:  if(  a) new_state = S_110011;
+                  else  new_state = IDLE;
+        S_110011: if(  a) new_state = S_11;
+                  else  new_state = S_110;
+    endcase
+end
+
+assign detected = (state == S_110011);
+
+always_ff @(posedge clk)
+    if(rst)
+      state <= IDLE;
+    else
+      state <= new_state;
 
 endmodule
 
@@ -115,8 +154,8 @@ module testbench;
   initial
   begin
     // Remove the comments below to generate the dump.vcd file and analyze it with GTKwave
-    // $dumpfile("dump_03_01.vcd");
-    // $dumpvars(0, testbench);
+     $dumpfile("dump_03_01.vcd");
+     $dumpvars(0, testbench);
 
     @ (negedge rst);
 
