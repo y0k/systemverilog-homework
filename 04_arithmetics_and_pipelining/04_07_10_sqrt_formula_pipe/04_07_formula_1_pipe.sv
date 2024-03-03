@@ -41,5 +41,48 @@ module formula_1_pipe
     // FPGA-Systems Magazine :: FSM :: Issue ALFA (state_0)
     // You can download this issue from https://fpga-systems.ru/fsm
 
+    logic [31:0] a_res, b_res, c_res;
+    logic [31:0] res_ff, res_sum;
+
+    logic a_res_vld, res_vld_ff;
+
+    isqrt isqrt1(
+        .clk(clk), 
+        .rst(rst), 
+        .x_vld(arg_vld), 
+        .x(a), 
+        .y_vld(a_res_vld), 
+        .y(a_res)
+    );
+
+    isqrt isqrt2(
+        .clk(clk), 
+        .rst(rst), 
+        .x_vld(arg_vld), 
+        .x(b), 
+        .y(b_res)
+    );
+
+    isqrt isqrt3(
+        .clk(clk), 
+        .rst(rst), 
+        .x_vld(arg_vld), 
+        .x(c), 
+        .y(c_res)
+    );
+
+    always_ff @(posedge clk) begin
+        if (rst) begin
+        res_vld_ff <= 0;
+        end else begin
+        res_vld_ff <= a_res_vld; 
+        end
+        res_ff <= res_sum; 
+    end
+
+    assign res_sum = a_res + b_res + c_res;
+
+    assign res = res_ff;
+    assign res_vld = res_vld_ff;
 
 endmodule

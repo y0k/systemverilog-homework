@@ -60,5 +60,75 @@ module formula_1_pipe_aware_fsm
     // FPGA-Systems Magazine :: FSM :: Issue ALFA (state_0)
     // You can download this issue from https://fpga-systems.ru/fsm
 
+    typedef enum bit [3:0] {
+    FSM_IDLE   = 4'd0,
+    FSM_A      = 4'd1,
+    FSM_B      = 4'd2,
+    FSM_C      = 4'd3,
+    FSM_WAIT   = 4'd4,
+    FSM_RES_A  = 4'd5,
+    FSM_RES_B  = 4'd6,
+    FSM_RES_C  = 4'd7,
+    FSM_DONE   = 4'd8
+    } state_e;
+
+    state_e state, next_state;
+    logic [31:0] result;
+
+    always_ff @(posedge clk) begin
+    if (rst)
+        state <= FSM_IDLE;
+    else
+        state <= next_state;
+    end
+
+    always_comb begin
+    next_state = state;
+    case (state)
+        FSM_IDLE: if (arg_vld) next_state = FSM_A;
+        FSM_A: next_state = FSM_B;
+        FSM_B: next_state = FSM_C;
+        FSM_C: next_state = FSM_WAIT;
+        FSM_WAIT: if (isqrt_y_vld) next_state = FSM_RES_A;
+        FSM_RES_A: next_state = FSM_RES_B;
+        FSM_RES_B: next_state = FSM_RES_C;
+        FSM_RES_C: next_state = FSM_DONE;
+        FSM_DONE: next_state = FSM_IDLE;
+    endcase
+    end
+
+    always_comb begin
+    case (state)
+        FSM_IDLE: begin
+        res_vld = 1'b0;
+        end
+        FSM_A: begin
+        isqrt_x = a;
+        isqrt_x_vld = 1'b1;
+        end
+        FSM_B: begin
+        isqrt_x = b;
+        isqrt_x_vld = 1'b1;
+        end
+        FSM_C: begin
+        isqrt_x = c;
+        isqrt_x_vld = 1'b1;
+        end
+        FSM_WAIT: begin
+        isqrt_x_vld = 1'b0;
+        end
+        FSM_DONE: begin
+        res = result;
+        res_vld = 1'b1;
+        end
+    endcase
+    end
+
+    always_ff @(posedge clk) begin
+    if (arg_vld)
+        result <= 32'd0;
+    else if (isqrt_y_vld)
+        result <= result + {16'd0, isqrt_y};
+    end
 
 endmodule
